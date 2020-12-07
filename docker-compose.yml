@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  ipns-server:
+    image: node:13.13.0
+    container_name: ipns-server
+    restart: always
+
+    volumes:
+      - ./server:/var/node
+      - ipns-server-node_modules:/var/node/node_modules
+    working_dir: /var/node
+    entrypoint: npm start
+    ports:
+      # websocket
+      # - 9543:9543
+      # http
+      # - 9544:9544
+      # reverse proxy
+      - 9545:9545
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "1"
+
+volumes:
+  ipns-server-node_modules:
+    name: ipns-server-node_modules

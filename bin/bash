@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+working_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.." && cd "$working_dir" || exit
+
+docker-compose run --rm --entrypoint "bash" ipns-server

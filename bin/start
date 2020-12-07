@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+working_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/.." && cd "$working_dir" || exit
+
+docker-compose -f docker-compose.yml restart
+docker-compose -f docker-compose.yml up

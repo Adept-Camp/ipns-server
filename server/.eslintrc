@@ -1,0 +1,16 @@
+{
+  "extends": "standard",
+  "globals": {
+    "arguments": "readonly"
+  },
+  "rules": {
+    require-await: "error",
+  	"object-curly-spacing": ["error", "never"],
+    "no-unused-vars": "warn",
+    "brace-style": ["error", "stroustrup"]
+  },
+  "plugins": ["json", "jest"],
+  "env": {
+    "jest/globals": true
+  }
+}
