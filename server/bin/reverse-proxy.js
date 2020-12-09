@@ -38,6 +38,7 @@ server.on('request', (req, res) => {
   }
 
   req.headers['x-forwarded-for'] = ip
+  anonymizeHeaders(req.headers)
   proxy.web(req, res, {target})
 })
 
@@ -52,8 +53,19 @@ server.on('upgrade', (req, socket, head) => {
   const target = 'http://localhost:9543'
 
   req.headers['x-forwarded-for'] = ip
+  anonymizeHeaders(req.headers)
   proxy.ws(req, socket, head, {target})
 })
+
+const anonymizeHeaders = (headers) => {
+  if (headers['x-forwarded-for']) {
+    headers['x-forwarded-for'] = headers['x-forwarded-for'].replace(/^::ffff:/, '').substring(0, 6)
+  }
+  if (headers['x-forwarded-for']) {
+    headers['cf-connecting-ip'] = headers['x-forwarded-for'].replace(/^::ffff:/, '').substring(0, 6)
+  }
+  return headers
+}
 
 server.listen(proxyServerPort)
 console.log(`reverse proxy listening on port ${proxyServerPort}`)

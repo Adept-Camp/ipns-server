@@ -1,4 +1,4 @@
-const {ipnsPaths, ipnsValues, ipnsRecords} = require('lib/fixtures')
+const {ipnsPaths, ipnsRecords} = require('lib/fixtures')
 const Db = require('lib/db')
 const HttpServer = require('./index')
 const path = require('path')
@@ -40,7 +40,13 @@ describe('http server', () => {
     const body = JSON.stringify({paths: [ipnsPaths[0], ipnsPaths[1], ipnsPaths[2]]})
     const options = {body, method: 'POST', headers: {'Content-Type': 'application/json'}}
     const res = await fetch(`${url}/resolve`, options).then(res => res.json())
-    expect(res).toStrictEqual([ipnsValues[0], ipnsValues[1], null])
+    for (const i in res) {
+      if (res[i] === null) {
+        continue
+      }
+      res[i] = Buffer.from(res[i].data)
+    }
+    expect(res).toStrictEqual([ipnsRecords[0], ipnsRecords[1], null])
   })
 
   afterAll(async () => {

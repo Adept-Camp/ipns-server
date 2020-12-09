@@ -31,7 +31,7 @@ class Db {
     const ipnsValue = uint8ArrayToString(ipnsRecord.value)
     // validate value is a valid cid and nothing weird
     assert(isIPFS.cid(ipnsValue))
-    await this.cache.set(ipnsPath, ipnsValue)
+    await this.cache.set(ipnsPath, marshalledIpnsRecord)
   }
 
   async get (ipnsPaths) {
@@ -42,8 +42,8 @@ class Db {
       return []
     }
     if (ipnsPaths.length === 1) {
-      const value = await this.cache.get(ipnsPaths[0])
-      return [value]
+      const ipnsRecord = await this.cache.get(ipnsPaths[0])
+      return [ipnsRecord]
     }
 
     // build query
@@ -59,14 +59,15 @@ class Db {
     const res = await this.cache.opts.store.query(query)
     const resValues = {}
     for (const _res of res) {
-      resValues[_res.key.replace(/^keyv:/, '')] = JSON.parse(_res.value).value
+      const base64Value = JSON.parse(_res.value).value.replace(/^:base64:/, '')
+      resValues[_res.key.replace(/^keyv:/, '')] = Buffer.from(base64Value, 'base64')
     }
 
-    const ipnsValues = []
+    const ipnsRecords = []
     for (const ipnsPath of ipnsPaths) {
-      ipnsValues.push(resValues[ipnsPath])
+      ipnsRecords.push(resValues[ipnsPath])
     }
-    return ipnsValues
+    return ipnsRecords
   }
 }
 

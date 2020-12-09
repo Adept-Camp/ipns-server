@@ -1,4 +1,4 @@
-const {ipnsPaths, ipnsValues, ipnsRecords} = require('lib/fixtures')
+const {ipnsPaths, ipnsRecords} = require('lib/fixtures')
 const WebSocketClient = require('socket.io-client')
 const Db = require('lib/db')
 const WebSocketServer = require('./index')
@@ -27,8 +27,8 @@ describe('websocket server', () => {
   test('publish and subscribe', async () => {
     // not published yet
     await new Promise((resolve) => {
-      webSocketClient.emit('subscribe', [ipnsPaths[0], ipnsPaths[1], ipnsPaths[2]], (ipnsValues) => {
-        expect(ipnsValues).toStrictEqual([null, null, null])
+      webSocketClient.emit('subscribe', [ipnsPaths[0], ipnsPaths[1], ipnsPaths[2]], (ipnsRecords) => {
+        expect(ipnsRecords).toStrictEqual([null, null, null])
         resolve()
       })
     })
@@ -36,9 +36,9 @@ describe('websocket server', () => {
     // publish
     await new Promise((resolve) => {
       // once subscribed should get real time publish updates
-      webSocketClient.on('publish', (ipnsPath, ipnsValue) => {
+      webSocketClient.on('publish', (ipnsPath, ipnsRecord) => {
         expect(ipnsPath).toBe(ipnsPaths[0])
-        expect(ipnsValue).toBe(ipnsValues[0])
+        expect(ipnsRecord).toStrictEqual(ipnsRecords[0])
         resolve()
       })
 
@@ -47,8 +47,8 @@ describe('websocket server', () => {
 
     // now is published
     await new Promise((resolve) => {
-      webSocketClient.emit('subscribe', [ipnsPaths[0], ipnsPaths[1], ipnsPaths[2]], (ipnsValues) => {
-        expect(ipnsValues).toStrictEqual([ipnsValues[0], null, null])
+      webSocketClient.emit('subscribe', [ipnsPaths[0], ipnsPaths[1], ipnsPaths[2]], (ipnsRecords) => {
+        expect(ipnsRecords).toStrictEqual([ipnsRecords[0], null, null])
         resolve()
       })
     })

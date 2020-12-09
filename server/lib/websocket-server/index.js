@@ -121,7 +121,7 @@ class WebSocketClient {
 
   log (eventName, eventArguments) {
     const ip = this.webSocketClient.request.headers['x-forwarded-for'] || this.webSocketClient.request.connection.remoteAddress
-    let log = `${new Date().toISOString()} ${ip.replace(/^::ffff:/, '').substring(0, 7)} ${eventName}`
+    let log = `${new Date().toISOString()} ${ip.replace(/^::ffff:/, '').substring(0, 6)} ${eventName}`
     if (eventArguments) {
       log += ` ${inspect(eventArguments)}`
     }
