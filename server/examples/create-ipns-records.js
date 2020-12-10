@@ -28,6 +28,6 @@ const createIpnsRecord = async (fileCid) => {
   const peerCid = peerId.toB58String()
   console.log({fileCid, peerCid, record, recordValue: uint8ArrayToString(record.value), marshalled, marshalledString: marshalled.toString(), marshalledValid})
 }
-createIpnsRecord('QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE71')
-createIpnsRecord('QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE72')
-createIpnsRecord('QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE73')
+createIpnsRecord('/ipfs/QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE71')
+createIpnsRecord('/ipfs/QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE72')
+createIpnsRecord('/ipfs/QmYjtig7VJQ6XsnUjqqJvj7QaMcCAwtrgNdahSiFofrE73')

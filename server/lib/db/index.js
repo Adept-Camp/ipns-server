@@ -38,7 +38,8 @@ class Db {
 
     const ipnsValue = uint8ArrayToString(ipnsRecord.value)
     // validate value is a valid cid and nothing weird
-    assert(isIPFS.cid(ipnsValue))
+    assert(ipnsValue.startsWith('/ipfs/'))
+    assert(isIPFS.cid(ipnsValue.replace(/^\/ipfs\//, '')))
     await this.cache.set(ipnsPath, marshalledIpnsRecord)
   }
 
