@@ -28,6 +28,14 @@ class Db {
     const peerCid = await PeerId.createFromPubKey(publicKey.bytes)
     assert(peerCid.equals(PeerId.createFromB58String(ipnsPath)))
 
+    // validate record sequence to prevent publishing old records
+    assert(typeof ipnsRecord.sequence === 'number')
+    const previousRecord = await this.cache.get(ipnsPath)
+    if (previousRecord) {
+      const unmarshalled = ipns.unmarshal(previousRecord)
+      assert(ipnsRecord.sequence > unmarshalled.sequence, `record sequence ${ipnsRecord.sequence} is not bigger than previous record sequence ${unmarshalled.sequence}`)
+    }
+
     const ipnsValue = uint8ArrayToString(ipnsRecord.value)
     // validate value is a valid cid and nothing weird
     assert(isIPFS.cid(ipnsValue))
