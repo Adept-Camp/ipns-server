@@ -79,7 +79,6 @@ class WebSocketClient {
     catch (e) {
       e.message = `on resolve failed: ${e.message}`
       console.log(e)
-      return
     }
   }
 
