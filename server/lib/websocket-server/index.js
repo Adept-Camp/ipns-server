@@ -52,16 +52,35 @@ class WebSocketClient {
 
   _initClientConnection () {
     this.log('connection')
+    this.webSocketClient.on('resolve', (ipnsPaths, ack) => this._onResolve(ipnsPaths, ack))
     this.webSocketClient.on('subscribe', (ipnsPaths, ack) => this._onSubscribe(ipnsPaths, ack))
     this.webSocketClient.on('unsubscribe', (ipnsPaths) => this._onUnsubscribe(ipnsPaths))
     this.webSocketClient.on('publish', (ipnsPath, ipnsRecord) => this._onPublish(ipnsPath, ipnsRecord))
 
     // notify client of new publishes he subscribes to
-    this.webSocketServer.on('publish', (ipnsPath, ipnsValue) => {
+    this.webSocketServer.on('publish', (ipnsPath, ipnsRecord) => {
       if (this.subscriptions.has(ipnsPath)) {
-        this.webSocketClient.emit('publish', ipnsPath, ipnsValue)
+        this.webSocketClient.emit('publish', ipnsPath, ipnsRecord)
       }
     })
+  }
+
+  async _onResolve (ipnsPaths, ack) {
+    this.log('resolve', ipnsPaths)
+    if (!ipnsPaths || !ipnsPaths.length) {
+      return
+    }
+
+    // send back ipns paths if any
+    try {
+      const ipnsRecords = await this.webSocketServer.db.get(ipnsPaths)
+      ack(ipnsRecords)
+    }
+    catch (e) {
+      e.message = `on resolve failed: ${e.message}`
+      console.log(e)
+      return
+    }
   }
 
   async _onSubscribe (ipnsPaths, ack) {
@@ -72,8 +91,8 @@ class WebSocketClient {
 
     // send back ipns paths if any
     try {
-      const ipnsValues = await this.webSocketServer.db.get(ipnsPaths)
-      ack(ipnsValues)
+      const ipnsRecords = await this.webSocketServer.db.get(ipnsPaths)
+      ack(ipnsRecords)
     }
     catch (e) {
       e.message = `on subscribe failed: ${e.message}`
@@ -115,8 +134,8 @@ class WebSocketClient {
     }
 
     // notify subscribed clients
-    const ipnsValues = await this.webSocketServer.db.get([ipnsPath])
-    this.webSocketServer.emit('publish', ipnsPath, ipnsValues[0])
+    const ipnsRecords = await this.webSocketServer.db.get([ipnsPath])
+    this.webSocketServer.emit('publish', ipnsPath, ipnsRecords[0])
   }
 
   log (eventName, eventArguments) {
