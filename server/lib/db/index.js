@@ -14,8 +14,8 @@ class Db {
   }
 
   async set (ipnsPath, marshalledIpnsRecord) {
-    assert(typeof ipnsPath === 'string')
-    assert(Buffer.isBuffer(marshalledIpnsRecord))
+    assert(typeof ipnsPath === 'string', `ipns path '${ipnsPath}' not a string`)
+    assert(Buffer.isBuffer(marshalledIpnsRecord), `marshalled ipns record '${marshalledIpnsRecord}' not a buffer`)
     validateIpnsPaths([ipnsPath])
 
     // validate ipns record is signed by embedded public key
@@ -26,10 +26,10 @@ class Db {
     // validate ipns path is the embedded public key
     // in case malicious user tries to submit old ipns record
     const peerCid = await PeerId.createFromPubKey(publicKey.bytes)
-    assert(peerCid.equals(PeerId.createFromB58String(ipnsPath)))
+    assert(peerCid.equals(PeerId.createFromB58String(ipnsPath)), `public key doesn't match ipns path '${ipnsPath}'`)
 
     // validate record sequence to prevent publishing old records
-    assert(typeof ipnsRecord.sequence === 'number')
+    assert(typeof ipnsRecord.sequence === 'number', `ipns record sequence '${ipnsRecord.sequence}' not a number`)
     const previousRecord = await this.cache.get(ipnsPath)
     if (previousRecord) {
       const unmarshalled = ipns.unmarshal(previousRecord)
@@ -38,13 +38,13 @@ class Db {
 
     const ipnsValue = uint8ArrayToString(ipnsRecord.value)
     // validate value is a valid cid and nothing weird
-    assert(ipnsValue.startsWith('/ipfs/'))
-    assert(isIPFS.cid(ipnsValue.replace(/^\/ipfs\//, '')))
+    assert(ipnsValue.startsWith('/ipfs/'), `ipns value '${ipnsValue}' doesn't start with '/ipfs/'`)
+    assert(isIPFS.cid(ipnsValue.replace(/^\/ipfs\//, '')), `ipns value '${ipnsValue}' not a cid`)
     await this.cache.set(ipnsPath, marshalledIpnsRecord)
   }
 
   async get (ipnsPaths) {
-    assert(Array.isArray(ipnsPaths))
+    assert(Array.isArray(ipnsPaths), `ipns paths '${ipnsPaths}' not an array`)
     validateIpnsPaths(ipnsPaths)
 
     if (ipnsPaths.length === 0) {
@@ -82,7 +82,7 @@ class Db {
 
 const validateIpnsPaths = (paths) => {
   for (const path of paths) {
-    assert(isIPFS.cid(path))
+    assert(isIPFS.cid(path), `ipns path '${path}' not a cid`)
   }
 }
 

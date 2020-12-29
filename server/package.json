@@ -1,7 +1,6 @@
 {
   "name": "ipns-server",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
     "start": "eslint --fix . && node bin/reverse-proxy.js",
     "test": "eslint --fix . && jest"
@@ -13,7 +12,7 @@
     "express": "4.17.1",
     "fs-extra": "9.0.1",
     "http-proxy": "1.18.1",
-    "ipfs": "^0.52.2",
+    "ipfs": "0.52.3",
     "ipns": "0.8.0",
     "is-ipfs": "2.0.0",
     "keyv": "4.0.1",
